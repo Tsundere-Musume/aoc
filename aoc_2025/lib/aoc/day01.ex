@@ -26,8 +26,8 @@ defmodule AOC.Day01 do
 
         current =
           case dir do
-            "L" -> current + rotation
-            "R" -> current - rotation
+            "L" -> current - rotation
+            "R" -> current + rotation
           end
           |> Integer.mod(100)
 
@@ -45,7 +45,38 @@ defmodule AOC.Day01 do
 
   # Part 2 solution
   def part2(input) do
-    input
-    |> parse()
+    {_, count} =
+      input
+      |> parse()
+      |> Enum.reduce({50, 0}, fn line, {current, count} ->
+        <<dir::binary-size(1), rest::binary>> = line
+        rotation = String.to_integer(rest)
+
+        gap =
+          cond do
+            current == 0 -> 100
+            dir == "L" -> current
+            dir == "R" -> 100 - current
+          end
+
+        count =
+          if rotation >= gap do
+            rotation = rotation - gap
+            count + div(rotation, 100) + 1
+          else
+            count
+          end
+
+        current =
+          case dir do
+            "L" -> current - rotation
+            "R" -> current + rotation
+          end
+          |> Integer.mod(100)
+
+        {current, count}
+      end)
+
+    count
   end
 end
