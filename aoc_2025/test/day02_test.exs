@@ -1,0 +1,19 @@
+defmodule AOC.Day02Test do
+  use ExUnit.Case
+
+  alias AOC.Day02
+
+  test "part 1 example" do
+    input = "
+    11-22,95-115,998-1012,1188511880-1188511890,222220-222224,
+    1698522-1698528,446443-446449,38593856-38593862,565653-565659,
+    824824821-824824827,2121212118-2121212124
+    "
+    assert Day02.part1(input) == 1_227_775_554
+  end
+
+  test "part 2 example" do
+    input = ""
+    assert Day02.part2(input) == nil
+  end
+end
