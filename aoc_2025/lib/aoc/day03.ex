@@ -42,7 +42,7 @@ defmodule AOC.Day03 do
 
       case first_jolts do
         [{num, idx} | _] when idx < bank_length - 1 ->
-          [ {n, _idx}| _tail] = max_jolts_in_order(bank, idx + 1)
+          [{n, _idx} | _tail] = max_jolts_in_order(bank, idx + 1)
           num * 10 + n
 
         [{first, _}, {second, _} | _rest] ->
@@ -56,5 +56,53 @@ defmodule AOC.Day03 do
   def part2(input) do
     input
     |> parse()
+    |> Enum.map(&get_joltage_2/1)
+    |> Enum.sum()
+  end
+
+  def get_joltage_2(bank) do
+    bank_length = String.length(bank)
+
+    String.graphemes(bank)
+    |> Enum.map(&String.to_integer/1)
+    |> Enum.with_index()
+    |> Enum.reduce([], fn {num, idx}, stack ->
+      case stack do
+        [] ->
+          [num]
+
+        _ ->
+          needed = 12 - length(stack)
+          remaining = bank_length - idx 
+
+          cond do
+            remaining <= needed ->
+              [num | stack]
+
+            true ->
+              popped = pop_while_less_or_minimum(stack, num, remaining)
+
+              if length(popped) < 12 do
+                [num | popped]
+              else
+                popped
+              end
+          end
+      end
+    end)
+    |> Enum.reverse()
+    |> Enum.reduce(0, fn num, acc -> acc * 10 + num end)
+  end
+
+  defp pop_while_less_or_minimum(stack, num, remaining) do
+    l = length(stack)
+
+    case stack do
+      [top | rest] when top < num and remaining + l > 12 ->
+        pop_while_less_or_minimum(rest, num, remaining)
+
+      _ ->
+        stack
+    end
   end
 end
